@@ -3,6 +3,7 @@
       Use Precision
       Use IO, only: ReadInput
       Use HEG, only: init_HEG, change_rs, GenerateTwist, ChangeTwist
+      Use Exporter, only: ExportUEGIntegrals 
       Use MP2, only: DrvMBPT
       Use CCD, only: DrvCCD
       Use dRPA, only: DrvdRPA
@@ -90,6 +91,8 @@
           else
               Call DrvdRPA(HEGData,UEGInfo,T2aaaa)
           endif
+          ! Print 1e- and 2e-integrals
+          Call ExportUEGIntegrals(HEGData,UEGInfo)
       endif
 
       if (UEGInfo%DoSkipTA) then

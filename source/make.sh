@@ -41,6 +41,10 @@ echo "compiled HEG.f90"
 $F95  -c         IO.f90
 echo "compiled IO.f90"
 
+# This is an exporter module to print integrals
+$F95 -O3 -c      Exporter.f90
+echo "compiled Exporter.f90"
+
 # These do the CCD
 $F95 -O3 -c         MP2.f90
 echo "compiled MP2.f90"
