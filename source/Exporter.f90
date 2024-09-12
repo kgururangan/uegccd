@@ -29,16 +29,9 @@ Contains
               write(6,*) 'Number of Occupied:', UEGInfo%NOcc
               write(6,*) 'Number of basis functions:', UEGInfo%NAO
 
-              open(unit=io, file='nelectrons', status='replace')
-              write(io,*) UEGInfo%Nelectron
-              close(io)
-
-              open(unit=io, file='nbasis', status='replace')
-              write(io,*) UEGInfo%NAO
-              close(io)
-
-              open(unit=io, file='nocc', status='replace')
-              write(io,*) UEGInfo%NOcc
+              open(unit=io, file='ueg.inp', status='replace')
+              write(io,*) UEGInfo%Nelectron, UEGInfo%NAO, UEGInfo%NOcc
+              write(io,*) HEGData%EHF
               close(io)
 
               open(unit=io, file='onebody.inp', status='replace')
@@ -85,8 +78,8 @@ Contains
                     end do
                  end do
               end do
-              ! write nuclear repulsion (set to 0 for now)
-              write(io,*) 0, 0, 0, 0, 0.0_pr
+              ! write nuclear repulsion (set to Madelung constant)
+              write(io,*) 0, 0, 0, 0, HEGData%Madelung
               close(io)
               !open(unit=io, file='mask', status='replace')
               !write(6,*) 'Writing T2 mask'

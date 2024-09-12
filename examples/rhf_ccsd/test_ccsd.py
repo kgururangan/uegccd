@@ -4,13 +4,14 @@ from miniccpy.driver import run_cc_calc, run_mpn_calc
 from miniccpy.integrals import spatial_to_spinorb
 
 def init_heg():
-    with open("nocc", "r") as f:
-        nocc = int(f.readlines()[0])
-    with open("nelectrons", "r") as f:
-        nelectron = int(f.readlines()[0])
-    with open("nbasis", "r") as f:
-        norb = int(f.readlines()[0])
-    return nelectron, norb, nocc
+    with open("ueg.inp", "r") as f:
+        for n, line in enumerate(f.readlines()):
+            L = line.split()
+            if n == 0:
+                nelectron, nbasis, nocc = [int(x) for x in L]
+            elif n == 1:
+                e_hf = float(L[0])
+    return nelectron, nbasis, nocc, e_hf
 
 def read_fock(nbasis):
     '''Reads the Fock matrix in onebody.inp.'''
@@ -42,9 +43,8 @@ def read_twobody(nbasis):
 
 def test_ccsd():
 
-    nelectrons, nbasis, nocc = init_heg()
+    nelectrons, nbasis, nocc, hf_energy = init_heg()
     nfrozen = 0
-    hf_energy = 0.0
 
     o = slice(0, nocc)
     v = slice(nocc, nbasis)
@@ -63,7 +63,7 @@ def test_ccsd():
     #
     # Check the results
     #
-    assert np.allclose(E_corr, -0.2979101676, atol=1.0e-08) 
+    assert np.allclose(E_corr, -0.5120154536, atol=1.0e-08) 
 
 if __name__ == "__main__":
     test_ccsd()

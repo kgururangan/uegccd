@@ -1,8 +1,8 @@
 # Electrons:      14
 # rS Points:      1
 Momentum Cutoff:  5
-rSMin:            3.0
-rSMax:            3.0
+rSMin:            0.5
+rSMax:            0.5
 Safe ERI:         T
 Do Rings:         T
 Do XRings:        T
