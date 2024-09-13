@@ -1,7 +1,8 @@
 import numpy as np
-from miniccpy.printing import print_custom_system_information, print_custom_system_information_rhf
+from miniccpy.printing import print_custom_system_information
 from miniccpy.driver import run_cc_calc, run_mpn_calc
 from miniccpy.integrals import spatial_to_spinorb
+from hegutils import init_heg, read_fock, read_twobody
 
 def init_heg():
     with open("ueg.inp", "r") as f:
@@ -46,24 +47,26 @@ def test_ccsd():
     nelectrons, nbasis, nocc, hf_energy = init_heg()
     nfrozen = 0
 
-    o = slice(0, nocc)
-    v = slice(nocc, nbasis)
+    o = slice(nelectrons)
+    v = slice(nelectrons, nbasis * 2)
 
-    print("   Reading Fock matrix")
+    print("Reading Fock matrix")
     fock = read_fock(nbasis)
-
-    print("   Reading ERI matrix")
+    print("Reading ERI matrix")
     g, _ = read_twobody(nbasis)
-    print("")
+    print("Converting to spinorbitals")
+    fock, g = spatial_to_spinorb(fock, g)
+    g -= np.transpose(g, (0, 1, 3, 2))
 
-    print_custom_system_information_rhf(fock, nelectrons, nfrozen, hf_energy)
+    print_custom_system_information(fock, nelectrons, nfrozen, hf_energy)
 
-    T, E_corr = run_cc_calc(fock, g, o, v, method='rccsd', maxit=80)
+    e_mp2 = run_mpn_calc(fock, g, o, v, method='mp2')
+    T, E_corr = run_cc_calc(fock, g, o, v, method='ccsd', maxit=80)
 
     #
     # Check the results
     #
-    assert np.allclose(E_corr, -0.5120154536, atol=1.0e-08) 
+    assert np.allclose(E_corr, -0.1369034549, atol=1.0e-08)
 
 if __name__ == "__main__":
     test_ccsd()

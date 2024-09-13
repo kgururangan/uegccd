@@ -50,47 +50,50 @@ Contains
               Real (Kind=pr) :: eri_val, eri_val2, fock_val
               Real (Kind=pr) :: HCore(UEGInfo%NAO)
               
-              Call ConvertFockToHcore(HCore,HEGData,UEGInfo)
+              !Call ConvertFockToHcore(HCore,HEGData,UEGInfo)
 
               open(unit=io, file='FCIDUMP', status='replace')
               write(io,*) '&FCI ', "NORB=", UEGInfo%NAO, ",", "NELEC=", UEGInfo%Nelectron, ",", "MS2=", 0
               write(io,*) 'ORBSYM=', ','
               write(io,*) 'ISYM=1 UHF=.FALSE.'
               write(io,*) '&END'
-              ! Write all 2e-integrals straight (in Chemist notation)
-!              do p=1,UEGInfo%NAO
-!                 do q=1,UEGInfo%NAO
-!                    do r=1,UEGInfo%NAO
-!                       ! Use the momentum-allowed indexing
-!                       s = FindIndex(HEGData,UEGINfo%MaxKPoint,UEGInfo%NAO,p,q,r)
-!                       if (s<=0) cycle
-!                       eri_val = ERI(HEGData,UEGInfo,p,q,r,s,DummyFlag=0)
-!                       if (eri_val < -80_pr) cycle
-!                       write(io,*) eri_val, p, r, q, s
-!                    end do
-!                 end do
-!              end do
-              ! Write only permutationally unique integrals
-              do p = 1,UEGInfo%NAO
-                 do r = 1,p
-                    x = p*(p + 1)/2 + r - 1
-                    do q = 1,UEGInfo%NAO
-                       do s = 1,q
-                          y = q*(q + 1)/2 + s - 1
-                          if (x >= y) then
-                              eri_val = ERI(HEGData,UEGInfo,p,q,r,s,DummyFlag=0)
-                              if (eri_val < -80_pr) cycle
-                              write(io,*) eri_val, p, r, q, s
-                          end if
-                       end do
+              ! Write all 2e-integrals straight
+              do p=1,UEGInfo%NAO
+                 do q=1,UEGInfo%NAO
+                    do r=1,UEGInfo%NAO
+                       ! Use the momentum-allowed indexing
+                       s = FindIndex(HEGData,UEGINfo%MaxKPoint,UEGInfo%NAO,p,q,r)
+                       if (s<=0) cycle
+                       eri_val = ERI(HEGData,UEGInfo,p,q,r,s,DummyFlag=0)
+                       if (eri_val < -80_pr) cycle
+                       write(io,*) eri_val, p, q, r, s
                     end do
                  end do
               end do
+              ! Write only permutationally unique integrals
+!              do p = 1,UEGInfo%NAO
+!                 do r = 1,p
+!                    x = p*(p + 1)/2 + r - 1
+!                    do q = 1,UEGInfo%NAO
+!                       !do s = 1,q
+!                          s = FindIndex(HEGData,UEGINfo%MaxKPoint,UEGInfo%NAO,p,q,r)
+!                          if (s<=0) cycle
+!                          y = q*(q + 1)/2 + s - 1
+!                          if (x >= y) then
+!                              eri_val = ERI(HEGData,UEGInfo,p,q,r,s,DummyFlag=0)
+!                              if (eri_val < -80_pr) cycle
+!                              write(io,*) eri_val, p, r, q, s
+!                          end if
+!                       !end do
+!                    end do
+!                 end do
+!              end do
               ! Write 1e-integrals
               do p = 1,UEGInfo%NAO
-                 do q = 1,p
+                 do q = 1,UEGInfo%NAO
                     if (p == q) then
-                       fock_val = HCore(p)
+                       !fock_val = HCore(p)
+                       fock_val = HEGData%Eigen(p)
                     else
                        fock_val = 0.0_pr
                     end if
@@ -115,7 +118,7 @@ Contains
               Real (Kind=pr) :: eri_val, eri_val2, fock_val
               Real (Kind=pr) :: HCore(UEGInfo%NAO)
               
-              Call ConvertFockToHcore(HCore,HEGData,UEGInfo)
+              !Call ConvertFockToHcore(HCore,HEGData,UEGInfo)
 
               open(unit=io, file='ueg.inp', status='replace')
               write(io,*) UEGInfo%Nelectron, UEGInfo%NAO, UEGInfo%NOcc

@@ -1,8 +1,8 @@
-# Electrons:      14
+# Electrons:      24
 # rS Points:      1
 Momentum Cutoff:  5
-rSMin:            0.5
-rSMax:            0.5
+rSMin:            5.0
+rSMax:            5.0
 Safe ERI:         T
 Do Rings:         T
 Do XRings:        T
@@ -42,5 +42,5 @@ DoSFCalcMP2:      F
 DoSFCalcCCD:      F
 DoSkipTA:         T
 DoOnlyMP2Grid:    F
-ExportIntegrals:  2
+ExportIntegrals:  1
 EndInput:         T

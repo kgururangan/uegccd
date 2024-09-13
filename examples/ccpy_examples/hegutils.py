@@ -1,9 +1,10 @@
 import numpy as np
-from miniccpy.printing import print_custom_system_information, print_custom_system_information_rhf
-from miniccpy.driver import run_cc_calc, run_mpn_calc
-from miniccpy.integrals import spatial_to_spinorb
+from ccpy import Driver
+from ccpy.models.integrals import Integral
+from ccpy.models.system import System
 
 def init_heg():
+    '''Reads basic information about the UEG calcualtion.'''
     with open("ueg.inp", "r") as f:
         for n, line in enumerate(f.readlines()):
             L = line.split()
@@ -24,7 +25,7 @@ def read_fock(nbasis):
                 fock[p, q] = float(lines[cnt].split()[0])
                 fock[q, p] = fock[p, q]
                 cnt += 1
-    return fock 
+    return fock
 
 def read_twobody(nbasis):
     '''Reads the ERI matrix (in physics notation) in twobody.inp.'''
@@ -41,34 +42,32 @@ def read_twobody(nbasis):
                 eri[p, q, r, s] = val
     return eri, nuclear_repulsion
 
-def test_ccsd():
-
+def setup_ueg_driver():
+    '''Construct a CCpy driver instance populated with the UEG system information and
+    bare Hamiltonian.'''
     nelectrons, nbasis, nocc, hf_energy = init_heg()
     nfrozen = 0
+    multiplicity = 1
 
-    o = slice(nelectrons)
-    v = slice(nelectrons, nbasis * 2)
-
-    print("Reading Fock matrix")
+    print("   Reading Fock matrix")
     fock = read_fock(nbasis)
-    print("Reading ERI matrix")
-    g, _ = read_twobody(nbasis)
-    print("Converting to spinorbitals")
-    fock, g = spatial_to_spinorb(fock, g)
-    g -= np.transpose(g, (0, 1, 3, 2))
 
-    print_custom_system_information(fock, nelectrons, nfrozen, hf_energy)
+    print("   Reading ERI matrix")
+    eri, madelung = read_twobody(nbasis)
+    print("")
 
-    e_mp2 = run_mpn_calc(fock, g, o, v, method='mp2')
-    T, E_corr = run_cc_calc(fock, g, o, v, method='ccsd', maxit=80)
+    system = System(nelectrons,
+                    nbasis,
+                    multiplicity,
+                    nfrozen,
+                    reference_energy=hf_energy,
+                    nuclear_repulsion=madelung,
+                    mo_energies=np.diagonal(fock))
 
-    #
-    # Check the results
-    #
-    assert np.allclose(E_corr, -0.0907402833, atol=1.0e-08)
+    hamiltonian = Integral(system, 2, {"a": fock, "b": fock,
+                                       "aa": eri - eri.transpose(0, 1, 3, 2),
+                                       "ab": eri,
+                                       "bb": eri - eri.transpose(0, 1, 3, 2)})
 
-if __name__ == "__main__":
-    test_ccsd()
-
-
+    return Driver(system, hamiltonian)
 
