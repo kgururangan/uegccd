@@ -42,4 +42,5 @@ DoSFCalcMP2:      F
 DoSFCalcCCD:      F
 DoSkipTA:         T
 DoOnlyMP2Grid:    F
+ExportIntegrals:  2
 EndInput:         T

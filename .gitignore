@@ -1,5 +1,6 @@
 onebody.inp
 twobody.inp
+FCIDUMP
 ueg.inp
 *.out
 fort.*

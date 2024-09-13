@@ -15,7 +15,7 @@
       Use Types, only: UegInfoType
       Implicit None
       Type (UEGInfoType), intent(Out) :: UEGInfo
-      Integer, Parameter    :: NParams = 44
+      Integer, Parameter    :: NParams = 45
       Integer, Parameter    :: LName   = 19
       Integer, Parameter    :: LLine   = 79
       Logical               :: Error, Exists
@@ -118,6 +118,7 @@
                     'DoSFCalcCCD        ',    &   ! Structure factor for CCD
                     'DoSkipTA           ',    &   ! Do not do TA at all
                     'DoOnlyMP2Grid      ',    &   ! This just calculates the MP2 grid for ML project
+                    'ExportIntegrals    ',    &   ! Controls dumping of integrals to external file
                     'EndInput           '/)       ! end of input 
 
 !================================================================!
@@ -302,6 +303,9 @@
         
         Case ('GapII') ! for an insulating gas
          Read(Value,*) UEGInfo%GapII
+         
+        Case ('ExportIntegrals') ! export integrals (=0: no export
+         Read(Value,*) UEGInfo%ExportIntegrals
                     
         Case ('EndInput')
          Read(Value,*) EndInput

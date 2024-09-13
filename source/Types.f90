@@ -79,6 +79,7 @@ Type UEGInfoType
     Logical :: DoSFCalcMP2
     Logical :: DoSFCalcCCD
     Logical :: DoSkipTA
+    Integer :: ExportIntegrals
 End Type UEGInfoType
 
 Type BasisSet
